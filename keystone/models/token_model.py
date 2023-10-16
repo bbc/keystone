@@ -429,6 +429,7 @@ class TokenModel(object):
 
     def _get_application_credential_roles(self):
         roles = []
+        roles_added = list()
         app_cred_roles = self.application_credential['roles']
         app_cred_roles = [{'role_id': r['id']} for r in app_cred_roles]
         effective_app_cred_roles = (
@@ -443,9 +444,10 @@ class TokenModel(object):
         user_roles = list(set([x['role_id'] for x in assignment_list]))
 
         for role in effective_app_cred_roles:
-            if role['role_id'] in user_roles:
+            if role['role_id'] in user_roles and role['role_id'] not in roles_added:
                 role = PROVIDERS.role_api.get_role(role['role_id'])
                 roles.append({'id': role['id'], 'name': role['name']})
+                roles_added.append(role['id'])
 
         return roles
 
